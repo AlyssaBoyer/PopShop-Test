@@ -21,8 +21,8 @@
 </header>
 <div id="showcase">
     <div class="container">
-        <h1>Welcome to Pop Shop</h1>
-        <p>Find your favorite Pop Figures here!</p>
+        <h1>Welcome to my Pop Shop</h1>
+        <p>Find the collection of my favorite Pop Figures here!</p>
     </div>
 </div>
 <div class="container" id="content">
@@ -32,6 +32,10 @@
             <img src="https://via.placeholder.com/100" alt="Figure Image">
             <h3 th:text="${figure.name}">Figure Name</h3>
             <p th:text="${figure.theme}">Figure Theme</p>
+            <form th:action="@{/delete}" method="post">
+                <input type="hidden" name="id" th:value="${figure.id}">
+                <button type="submit">Delete</button>
+            </form>
         </div>
     </div>
 </div>

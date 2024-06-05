@@ -36,4 +36,11 @@ public class FigureController {
         figureService.saveFigure(figure);
         return "redirect:/";
     }
+
+    @PostMapping("/delete")
+    public String deleteFigure(@RequestParam Long id) {
+        logger.info("Deleting figure with id: " + id);
+        figureService.deleteFigureById(id);
+        return "redirect:/";
+    }
 }
