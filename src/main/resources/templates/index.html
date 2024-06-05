@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pop Shop</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header>
+    <div class="container">
+        <div id="branding">
+            <h1>Pop Shop</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/add">Add Figure</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<div id="showcase">
+    <div class="container">
+        <h1>Welcome to Pop Shop</h1>
+        <p>Find your favorite Pop Figures here!</p>
+    </div>
+</div>
+<div class="container" id="content">
+    <h2>Available Figures</h2>
+    <div class="card-container">
+        <div class="card" th:each="figure : ${figures}">
+            <img src="https://via.placeholder.com/100" alt="Figure Image">
+            <h3 th:text="${figure.name}">Figure Name</h3>
+            <p th:text="${figure.theme}">Figure Theme</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
