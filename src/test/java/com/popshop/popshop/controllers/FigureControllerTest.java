@@ -39,6 +39,7 @@ public class FigureControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
+    // Tester la page d'accueil
     @Test
     public void testIndex() throws Exception {
         List<PopFigure> figures = new ArrayList<>();
@@ -53,6 +54,7 @@ public class FigureControllerTest {
                 .andExpect(model().attribute("figures", figures));
     }
 
+    // Tester l'ajout d'une figurine via une requête POST
     @Test
     public void testAddFigure() throws Exception {
         when(figureService.saveFigure(any(PopFigure.class))).thenReturn(new PopFigure("Iron Man", "Marvel"));
@@ -64,6 +66,7 @@ public class FigureControllerTest {
                 .andExpect(redirectedUrl("/"));
     }
 
+    // Tester la méthode addFigure du contrôleur
     @Test
     public void testAddFigureMethod() {
         FigureController figureController = new FigureController();
