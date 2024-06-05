@@ -1,0 +1,87 @@
+name: CD Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip xvfb libxi6 libgconf-2-4 curl
+
+      - name: Remove Firefox Snap
+        run: sudo snap remove firefox
+
+      - name: Add Mozilla Team PPA
+        run: sudo add-apt-repository -y ppa:mozillateam/ppa
+
+      - name: Pin PPA Packages
+        run: |
+          echo '
+          Package: *
+          Pin: release o=LP-PPA-mozillateam
+          Pin-Priority: 1001
+          ' | sudo tee /etc/apt/preferences.d/mozilla-firefox
+
+      - name: Configure Unattended Upgrades for Firefox
+        run: |
+          echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+
+      - name: Install Firefox
+        run: sudo apt-get install -y firefox
+
+      - name: Install Geckodriver
+        run: |
+          GECKODRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep 'tag_name' | cut -d\" -f4) && \
+          wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz && \
+          tar -xvzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -C $HOME && \
+          chmod +x $HOME/geckodriver && \
+          echo "GECKODRIVER_PATH=$HOME/geckodriver" >> "$GITHUB_ENV"
+
+      - name: Build without tests
+        run: mvn clean install -DskipTests
+
+      - name: Start Spring Boot Application
+        run: mvn spring-boot:run &> spring-boot-output.log &
+        env:
+          SPRING_PROFILES_ACTIVE: test
+
+      - name: Wait for Spring Boot Application to Start
+        run: |
+          echo "Waiting for Spring Boot application to start..."
+          sleep 3
+          until curl --output /dev/null --silent --head --fail http://localhost:8080; do echo "Waiting for server..."; sleep 3; done
+
+      - name: Display Spring Boot Logs
+        run: cat spring-boot-output.log
+
+      - name: Run tests
+        run: |
+          export DISPLAY=:1
+          mvn test -Dwebdriver.gecko.driver=${{ env.GECKODRIVER_PATH }}
+        env:
+          GECKODRIVER_PATH: ${{ env.GECKODRIVER_PATH }}
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        run: |
+          git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
+          git push heroku HEAD:main
