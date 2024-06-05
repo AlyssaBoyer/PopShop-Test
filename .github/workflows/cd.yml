@@ -1,10 +1,11 @@
-name: CD Pipeline
+name: Pipeline CD
 
 on:
   workflow_dispatch:
   push:
     branches:
       - release
+      - feat/CI_CD
 
 jobs:
   deploy:
@@ -83,5 +84,5 @@ jobs:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
         run: |
-          git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
+          git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
           git push heroku HEAD:main
