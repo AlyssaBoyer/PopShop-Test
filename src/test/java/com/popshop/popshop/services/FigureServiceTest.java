@@ -5,6 +5,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.popshop.popshop.models.PopFigure;
 import com.popshop.popshop.repositories.FigureRepository;
@@ -13,7 +16,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
 
 @SpringBootTest
 public class FigureServiceTest {
@@ -42,5 +44,14 @@ public class FigureServiceTest {
 
         PopFigure savedFigure = figureService.saveFigure(figure);
         assertEquals("Batman", savedFigure.getName());
+    }
+
+    @Test
+    public void testDeleteFigure() {
+        Long figureId = 1L;
+        doNothing().when(figureRepository).deleteById(figureId);
+
+        figureService.deleteFigureById(figureId);
+        verify(figureRepository, times(1)).deleteById(figureId);
     }
 }

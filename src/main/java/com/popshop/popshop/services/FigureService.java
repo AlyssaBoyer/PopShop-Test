@@ -19,4 +19,8 @@ public class FigureService {
     public PopFigure saveFigure(PopFigure figure) {
         return figureRepository.save(figure);
     }
+
+    public void deleteFigureById(Long id) {
+        figureRepository.deleteById(id);
+    }
 }
