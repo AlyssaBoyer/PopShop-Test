@@ -19,20 +19,20 @@ public class IntegrationTests {
 
 	@Test
 	public void testHomePageAndAddFigure() throws Exception {
-		// Test the home page
+		// Tester la page d'accueil
 		mockMvc.perform(get("/"))
 				.andExpect(status().isOk())
 				.andExpect(view().name("index"))
 				.andExpect(model().attributeExists("figures"));
 
-		// Test adding a figure
+		// Tester l'ajout d'une figurine
 		mockMvc.perform(post("/add")
 						.param("name", "Iron Man")
 						.param("theme", "Marvel"))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/"));
 
-		// Verify the figure was added by re-checking the home page
+		// Vérifier que la figurine a été ajoutée en re-vérifiant la page d'accueil
 		mockMvc.perform(get("/"))
 				.andExpect(status().isOk())
 				.andExpect(view().name("index"))
