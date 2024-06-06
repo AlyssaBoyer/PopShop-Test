@@ -56,12 +56,6 @@ jobs:
       - name: Build without tests
         run: mvn clean install -DskipTests
 
-      - name: Start Xvfb
-        run: |
-          export DISPLAY=:1
-          Xvfb :1 -screen 0 1280x1024x16 &
-          sleep 3
-
       - name: Start Spring Boot Application
         run: mvn spring-boot:run &> spring-boot-output.log &
         env:
