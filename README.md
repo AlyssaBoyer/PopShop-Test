@@ -57,6 +57,8 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants sur v
    ```
 
 3. Ouvrez votre navigateur et accédez à [http://localhost:8080](http://localhost:8080) pour voir l'application en action.
+   
+4. Un mail est envoyé aux collaborateurs lorsque la pipeline échoue.
 
 ## Tests
 
